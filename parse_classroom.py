@@ -1,17 +1,32 @@
 def main():
-    print(parse_simple_classroom("classroom_simple.txt"))
+    students_list = parse_simple_classroom("classroom_simple.txt")
+
+    average_grades = student_avg(students_list, "Griffin")
+    print(average_grades)
+
+
+def student_avg(students_list, student_name):
+    """return the average(float) of grades of the student.
+     In case student_name doesn’t exist in student_list, the function should return None."""
+
+    # getting grades for student_name
+    student_info = [student for student in students_list
+                    if student["name"] == student_name]
+    grades = student_info[0]["grades"]
+
+    return round(sum(grades) / len(grades), 1)
 
 
 def parse_simple_classroom(file_path):
     # getting all data in one string
-    with open(file_path, "r") as file:
+    with open(file_path, mode="r") as file:
         data = file.read()
 
-    # splitting the info so each element in list will represent student information
+    # split data so each element in list will represent student information
     students_list = data.split("###")
     del students_list[0]  # first element empty string
 
-    # parse student info from student_list and adding it as dictionary to list variable: students
+    # adding student info as dictionary to a students: list
     students = []
     for student_info in students_list:
         name, country, grade_1, grade_2, grade_3 = student_info.strip().split("\n")
