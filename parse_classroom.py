@@ -5,19 +5,29 @@ def main():
     print(average_grades)
 
 
-def student_avg(students_list, student_name):
-    """return the average(float) of grades of the student.
-     In case student_name doesn’t exist in student_list, the function should return None."""
+def student_avg(students_list: list, student_name: str):
+    """
+     Return the average (float) of grades of the student. In case
+    student_name doesn’t exist in student_list, return None.
+    """
 
-    # getting grades for student_name
-    student_info = [student for student in students_list
-                    if student["name"] == student_name]
-    grades = student_info[0]["grades"]
+    grades = None
+    for student in students_list:
+        if student["name"] == student_name:
+            grades = student["grades"]
+            break
 
     return round(sum(grades) / len(grades), 1)
 
 
 def parse_simple_classroom(file_path):
+    """ Parse classroom file that is given in `file_path` parameter.
+     Returns a list of dictionaries describing the students in the classroom,
+     each student is described with the dictionary: {
+       'name': ...,
+       'country': ...,
+       'grades': [...]
+     }"""
     # getting all data in one string
     with open(file_path, mode="r") as file:
         data = file.read()
