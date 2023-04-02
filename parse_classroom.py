@@ -18,7 +18,7 @@ def parse_simple_classroom(file_path):
         student_dict = {
                         "name": name,
                         "country": country,
-                        "grades": [grade_1, grade_2, grade_3]
+                        "grades": [int(grade_1), int(grade_2), int(grade_3)]
                         }
         students.append(student_dict)
 
