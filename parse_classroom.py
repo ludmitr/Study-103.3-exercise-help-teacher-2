@@ -1,14 +1,15 @@
+import statistics
 SIMPLE_CLASSROOM_PATH = "classroom_simple.txt"
 COMPLEX_CLASSROOM_PATH = "classroom_complex.txt"
 
 
 def main():
-    student_name_input = input("Enter student name: ")
 
-    # students_list = parse_simple_classroom(SIMPLE_CLASSROOM_PATH)
-    students_list = parse_complex_classroom(COMPLEX_CLASSROOM_PATH)
-    print(students_list)
-    average_grades = student_avg(students_list, student_name_input)
+    students = parse_complex_classroom(COMPLEX_CLASSROOM_PATH)
+    print(calculate_statistics_of_classroom(students))
+
+    student_name_input = input("Enter student name: ")
+    average_grades = student_avg(students, student_name_input)
 
     if average_grades:
         print(f"the average grades of {student_name_input}, {average_grades}")
@@ -16,11 +17,81 @@ def main():
         print("Sorry, this user does not exist")
 
 
+def calculate_statistics_of_classroom(students: dict):
+    """
+    Calculate statistics of classroom - total average grade, median grade,
+    and sorted students by its average grade.
+    returns:  string with all statistics
+    """
+    # putting all grades together
+    all_grades = []
+    for student_info in students.values():
+        all_grades.extend(student_info["grades"])
+
+    total_average_grade = calculate_average_of_grades(all_grades)
+    median_grade = calculate_median_grade(all_grades)
+    sorted_student_list = sort_student_by_average_grade(students)
+
+    # creating text with statics of classroom
+    text_to_print = (
+        "Total average of grades: {}\n"
+        "Median grade: {}\n"
+        "Student by average grade, from highest to lowest:"
+    ).format(total_average_grade, median_grade)
+    for student in sorted_student_list:
+        text_to_print += f"\nname: {student['name']}, average grade: {student['av_grade']}"
+
+    return text_to_print
+
+
+def sort_student_by_average_grade(students: dict):
+    """
+    Calculate the average grade for each student and return the result as a list of dictionaries.
+
+    Each dictionary in the returned list has the following format:
+    {
+        "name": "student_name",
+        "av_grade": average_grade: float
+    }
+    """
+    # creating list of dictionaries with student info
+    student_list = []
+    for student_name, info in students.items():
+        student = {
+                   "name": student_name,
+                   "av_grade": calculate_average_of_grades(info["grades"])
+                  }
+        student_list.append(student)
+
+    # sorting list by its average grades from high to low
+    sorted_student_list = sorted(
+                        student_list,
+                        key=lambda student_info: student_info["av_grade"],
+                        reverse=True)
+
+    return sorted_student_list
+
+
+def calculate_median_grade(grades: list):
+    """
+    Calculate median grade and returns it
+    """
+    sorted_grades = sorted(grades)
+    return statistics.median(sorted_grades)
+
+
+def calculate_average_of_grades(grades: list):
+    """
+    returns an average grade(float) of grades
+    """
+    return round(sum(grades) / len(grades), 1)
+
+
 def parse_complex_classroom(file_path):
     """ Parse classroom file that is given in `file_path` parameter.
-     Returns a list of dictionaries describing the students in the classroom,
+     Returns a dictionary of dictionaries describing the students in the classroom,
+     where keys are name of student and value is dict of info of that student
      each student is described with the dictionary: {
-        'name': ...,
         'country': ...,
         'grades': [...]
     }"""
@@ -33,23 +104,22 @@ def parse_complex_classroom(file_path):
     del students_list[0]  # deleting first element empty string
 
     # adding student info as dictionary to a students: list
-    students = []
+    students = {}
     for student_info in students_list:
         student_info = student_info.strip().split("\n")
         name, country = student_info[0], student_info[1]
         grades = [int(grade) for grade in student_info[2:]]
 
         student_dict = {
-            "name": name,
             "country": country,
             "grades": grades
         }
-        students.append(student_dict)
+        students[name] = student_dict
 
     return students
 
 
-def student_avg(students_list: list, student_name: str):
+def student_avg(students_dict: dict, student_name: str):
     """
      Return the average (float) of grades of the student. In case
     student_name doesn't exist in student_list, return None.
@@ -57,10 +127,9 @@ def student_avg(students_list: list, student_name: str):
 
     # iterating student_list to find student with name student_name
     # if found -> return average of its student grades
-    for student in students_list:
-        if student["name"] == student_name:
-            grades = student["grades"]
-            return round(sum(grades) / len(grades), 1)
+    if student_name in students_dict:
+        grades = students_dict[student_name]["grades"]
+        return round(sum(grades) / len(grades), 1)
 
     return None  # case where no student["name"] == student_name
 
