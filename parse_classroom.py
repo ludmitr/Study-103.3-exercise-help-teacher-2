@@ -4,15 +4,19 @@ COMPLEX_CLASSROOM_PATH = "classroom_complex.txt"
 
 
 def main():
-
+    """
+    parsing on COMPLEX_CLASSROOM_PATH
+    """
+    # getting students dictionary out of COMPLEX_CLASSROOM_PATH and printing statistics
     students = parse_complex_classroom(COMPLEX_CLASSROOM_PATH)
     print(calculate_statistics_of_classroom(students))
 
+    # getting name from user, printing he's average grade and all info we have on him
     student_name_input = input("Enter student name: ")
     average_grades = student_avg(students, student_name_input)
-
     if average_grades:
         print(f"the average grades of {student_name_input}, {average_grades}")
+        print(students[student_name_input])
     else:
         print("Sorry, this user does not exist")
 
@@ -93,7 +97,9 @@ def parse_complex_classroom(file_path):
      where keys are name of student and value is dict of info of that student
      each student is described with the dictionary: {
         'country': ...,
-        'grades': [...]
+        'grades': [...] list of int
+        'notes': [...,...]
+        'additional attributes': ...
     }"""
     # getting all data in one string
     with open(file_path, mode="r") as file:
@@ -106,14 +112,25 @@ def parse_complex_classroom(file_path):
     # adding student info as dictionary to a students: list
     students = {}
     for student_info in students_list:
+        student_dict = {}
         student_info = student_info.strip().split("\n")
-        name, country = student_info[0], student_info[1]
-        grades = [int(grade) for grade in student_info[2:]]
+        name, student_dict["country"] = student_info[0], student_info[1]
+        grades = []
+        notes = []
+        for index in range(2, len(student_info)):
+            if student_info[index].isnumeric():  # case where rest info is grades:
+                grades = [int(grades) for grades in student_info[index:]]
+                break
+            # adding arbitrary attributes, creating notes
+            key, value = student_info[index].split("=")
+            if key == "note":
+                notes.append(value)
+            else:
+                student_dict[key] = value
 
-        student_dict = {
-            "country": country,
-            "grades": grades
-        }
+        if notes:
+            student_dict["notes"] = notes
+        student_dict["grades"] = grades
         students[name] = student_dict
 
     return students
