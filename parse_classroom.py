@@ -121,6 +121,7 @@ def parse_complex_classroom(file_path):
             if student_info[index].isnumeric():  # case where rest info is grades:
                 grades = [int(grades) for grades in student_info[index:]]
                 break
+
             # adding arbitrary attributes, creating notes
             key, value = student_info[index].split("=")
             if key == "note":
