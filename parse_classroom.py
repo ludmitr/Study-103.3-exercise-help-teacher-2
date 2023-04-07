@@ -109,7 +109,7 @@ def parse_complex_classroom(file_path):
     students_list = data.split("###")
     del students_list[0]  # deleting first element empty string
 
-    # adding student info as dictionary to a students: list
+    # adding student info as dictionary to a student
     students = {}
     for student_info in students_list:
         student_dict = {}
