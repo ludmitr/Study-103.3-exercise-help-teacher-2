@@ -23,6 +23,10 @@ United States
 ###
 Griffin
 United Kingdom
+food=Hamburger
+color=Blue
+note=Listens in the class
+note=I think she is super smart
 100
 90
 ###
